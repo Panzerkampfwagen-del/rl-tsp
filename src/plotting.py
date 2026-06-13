@@ -76,8 +76,12 @@ def plot_shift_bar_chart(
     ax.legend(handles=patches, fontsize=9)
 
     for bar, m, s in zip(bars, means, stds):
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + s + 0.2,
-                f"{m:.1f}%", ha="center", va="bottom", fontsize=9)
+        if m >= 0:
+            y_pos, va = bar.get_height() + s + 0.2, "bottom"
+        else:
+            y_pos, va = bar.get_height() - s - 0.2, "top"
+        ax.text(bar.get_x() + bar.get_width() / 2, y_pos,
+                f"{m:.1f}%", ha="center", va=va, fontsize=9)
 
     fig.tight_layout()
     fig.savefig(save_path, dpi=150, bbox_inches="tight")

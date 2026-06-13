@@ -55,9 +55,7 @@ class GreedyRolloutBaseline:
         t_stat, p_value = stats.ttest_rel(cur_len, bl_len)
         updated = False
         if t_stat < 0 and p_value / 2 < self.p_threshold:
-            self.baseline_model.load_state_dict(
-                copy.deepcopy(self.model.state_dict())
-            )
+            self.baseline_model.load_state_dict(self.model.state_dict())
             updated = True
 
         self.model.train()

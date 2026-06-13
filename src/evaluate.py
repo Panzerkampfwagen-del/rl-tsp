@@ -32,7 +32,8 @@ def evaluate_model(
     N_total = cities.shape[0]
 
     model_lens, nn_lens, best_lens, rand_lens = [], [], [], []
-    method = "2-opt"
+    method: str = "2-opt"
+    method_set: bool = False
 
     for start in range(0, N_total, batch_size):
         batch = cities[start:start + batch_size].to(device)
@@ -42,8 +43,13 @@ def evaluate_model(
         nn_t = batch_nn_tours(batch)
         nn_lens.append(tour_length(batch, nn_t).cpu())
 
-        best_t, method = batch_best_tours(batch)
+        best_t, batch_method = batch_best_tours(batch)
         best_lens.append(tour_length(batch, best_t).cpu())
+        if not method_set:
+            method = batch_method
+            method_set = True
+        elif batch_method != method:
+            method = "2-opt"
 
         rand_t = random_tours(batch)
         rand_lens.append(tour_length(batch, rand_t).cpu())
@@ -62,8 +68,8 @@ def evaluate_model(
         "model_len_std":  float(model_len.std()),
         "gap_vs_nn_mean": gap_nn_mean,
         "gap_vs_nn_std":  gap_nn_std,
-        f"gap_vs_{method}_mean": gap_best_mean,
-        f"gap_vs_{method}_std":  gap_best_std,
+        "gap_vs_best_mean": gap_best_mean,
+        "gap_vs_best_std":  gap_best_std,
         "gap_vs_random_mean": gap_rand_mean,
         "gap_vs_random_std":  gap_rand_std,
         "baseline_method": method,

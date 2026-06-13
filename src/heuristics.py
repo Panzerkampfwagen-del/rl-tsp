@@ -33,6 +33,7 @@ def two_opt_improve(cities_np: np.ndarray, tour: np.ndarray,
     """2-opt local search. Returns improved tour."""
     N = len(tour)
     tour = tour.copy()
+    dist = np.linalg.norm(cities_np[:, None] - cities_np[None, :], axis=-1)
     improved = True
     iters = 0
     while improved and iters < max_iter:
@@ -42,11 +43,7 @@ def two_opt_improve(cities_np: np.ndarray, tour: np.ndarray,
             for j in range(i + 2, N):
                 a, b = tour[i], tour[(i + 1) % N]
                 c, d = tour[j], tour[(j + 1) % N]
-                d0 = (np.linalg.norm(cities_np[a] - cities_np[b]) +
-                      np.linalg.norm(cities_np[c] - cities_np[d]))
-                d1 = (np.linalg.norm(cities_np[a] - cities_np[c]) +
-                      np.linalg.norm(cities_np[b] - cities_np[d]))
-                if d1 < d0 - 1e-8:
+                if dist[a, c] + dist[b, d] < dist[a, b] + dist[c, d] - 1e-8:
                     tour[i + 1:j + 1] = tour[i + 1:j + 1][::-1]
                     improved = True
     return tour
@@ -115,7 +112,8 @@ def batch_best_tours(cities: torch.Tensor) -> tuple:
     arr = cities.cpu().numpy()
     results = [best_tour(arr[b], label=True) for b in range(B)]
     tours = np.stack([r[0] for r in results])
-    method = results[0][1]
+    methods = [r[1] for r in results]
+    method = methods[0] if len(set(methods)) == 1 else "2-opt"
     return torch.from_numpy(tours).to(cities.device), method
 
 

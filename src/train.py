@@ -44,6 +44,7 @@ def train(cfg: Config) -> None:
 
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.lr)
 
+    orig_model = model
     if cfg.device != "cpu":
         torch.set_float32_matmul_precision("high")
         try:
@@ -53,8 +54,8 @@ def train(cfg: Config) -> None:
                 warnings.simplefilter("ignore")
                 model = torch.compile(model)
             print("torch.compile enabled (TF32 on)")
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"torch.compile failed ({e}); running in eager mode.")
 
     log_path = os.path.join(cfg.checkpoint_dir, cfg.log_file)
     with open(log_path, "w", newline="") as f:
@@ -107,8 +108,7 @@ def train(cfg: Config) -> None:
 
         if epoch % 10 == 0 or epoch == cfg.n_epochs:
             ckpt = os.path.join(cfg.checkpoint_dir, f"model_ep{epoch:04d}.pt")
-            sd = model._orig_mod.state_dict() if hasattr(model, "_orig_mod") else model.state_dict()
-            torch.save(sd, ckpt)
+            torch.save(orig_model.state_dict(), ckpt)
 
     if wandb_run:
         wandb_run.finish()

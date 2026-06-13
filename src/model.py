@@ -44,8 +44,7 @@ class TSPEncoder(nn.Module):
 
 
 class TSPDecoder(nn.Module):
-    def __init__(self, d_model: int = 128, n_heads: int = 8,
-                 tanh_clip: float = 10.0) -> None:
+    def __init__(self, d_model: int = 128, tanh_clip: float = 10.0) -> None:
         super().__init__()
         self.d_model = d_model
         self.tanh_clip = tanh_clip
@@ -91,7 +90,7 @@ class TSPModel(nn.Module):
                  tanh_clip: float = 10.0) -> None:
         super().__init__()
         self.encoder = TSPEncoder(d_model, n_heads, n_encoder_layers, d_ff)
-        self.decoder = TSPDecoder(d_model, n_heads, tanh_clip)
+        self.decoder = TSPDecoder(d_model, tanh_clip)
 
     def forward(
         self,
@@ -111,6 +110,7 @@ class TSPModel(nn.Module):
         visited = torch.zeros(B, N, dtype=torch.bool, device=device)
         tour = torch.zeros(B, N, dtype=torch.long, device=device)
         log_probs = torch.zeros(B, device=device)
+        batch_idx = torch.arange(B, device=device)
 
         # first step: no "first city" yet — use graph_emb as placeholder
         first_emb = graph_emb
@@ -125,14 +125,14 @@ class TSPModel(nn.Module):
             else:
                 chosen = torch.multinomial(probs, 1).squeeze(1)
 
-            log_p = torch.log(probs[torch.arange(B, device=device), chosen] + 1e-8)
+            log_p = torch.log(probs[batch_idx, chosen] + 1e-8)
             log_probs += log_p
 
             tour[:, step] = chosen
             # scatter produces a new tensor; avoids autograd version-mismatch
             visited = visited.scatter(1, chosen.unsqueeze(1), True)
 
-            chosen_emb = node_emb[torch.arange(B, device=device), chosen]
+            chosen_emb = node_emb[batch_idx, chosen]
             if step == 0:
                 first_emb = chosen_emb
             last_emb = chosen_emb

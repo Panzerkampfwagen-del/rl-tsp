@@ -30,7 +30,6 @@ class Config:
 
     # Misc
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
-    mixed_precision: bool = False
     use_wandb: bool = False
     checkpoint_dir: str = "checkpoints"
     figures_dir: str = "figures"

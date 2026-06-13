@@ -40,11 +40,9 @@ def run_shift_analysis(
         cities = sample_instances(dist, n_test, cfg.n_cities, device=cfg.device, rng=rng)
         metrics = evaluate_model(model, cities, batch_size=cfg.batch_size)
         method  = metrics["baseline_method"]
-        gap_key = f"gap_vs_{method}_mean"
-        std_key = f"gap_vs_{method}_std"
         results[dist] = {
-            "gap_mean":       metrics[gap_key],
-            "gap_std":        metrics[std_key],
+            "gap_mean":       metrics["gap_vs_best_mean"],
+            "gap_std":        metrics["gap_vs_best_std"],
             "model_len_mean": metrics["model_len_mean"],
             "model_len_std":  metrics["model_len_std"],
             "baseline_method": method,
