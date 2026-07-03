@@ -59,4 +59,4 @@ class GreedyRolloutBaseline:
             updated = True
 
         self.model.train()
-        return updated, float(p_value / 2)
+        return updated, float(p_value / 2) if t_stat < 0 else float(1.0 - p_value / 2)

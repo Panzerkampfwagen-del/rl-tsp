@@ -125,7 +125,7 @@ class TSPModel(nn.Module):
             else:
                 chosen = torch.multinomial(probs, 1).squeeze(1)
 
-            log_p = torch.log(probs[batch_idx, chosen] + 1e-8)
+            log_p = F.log_softmax(logits, dim=-1)[batch_idx, chosen]
             log_probs += log_p
 
             tour[:, step] = chosen

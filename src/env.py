@@ -64,7 +64,9 @@ def sample_grid(batch: int, n: int, device: str = "cpu",
     side = int(np.ceil(np.sqrt(n)))
     g = np.linspace(0.05, 0.95, side)
     gx, gy = np.meshgrid(g, g)
-    grid_pts = np.stack([gx.ravel(), gy.ravel()], axis=1)[:n]  # (n,2)
+    all_pts = np.stack([gx.ravel(), gy.ravel()], axis=1)  # (side*side, 2)
+    chosen_idx = rs.choice(len(all_pts), size=n, replace=False)
+    grid_pts = all_pts[chosen_idx]  # (n, 2) — symmetric random sample from full grid
     pts = np.tile(grid_pts, (batch, 1, 1)).astype(np.float32)
     if jitter > 0:
         noise = rs.uniform(-jitter, jitter, size=(batch, n, 2)).astype(np.float32)

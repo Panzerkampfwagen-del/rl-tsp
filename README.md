@@ -1,6 +1,6 @@
 # rl-tsp
 
-**Strongest finding:** A TSP-20 attention model trained only on uniform random cities matches or _beats_ the 2-opt heuristic on four of five test distributions — including out-of-distribution ones — with the single notable exception being cities confined to a compact sub-region (+4.4% gap).
+**Strongest finding:** A TSP-20 attention model trained only on uniform random cities matches or _beats_ the 2-opt heuristic on four of five test distributions — including out-of-distribution ones — with the single notable exception being cities confined to a compact sub-region (+5.1% gap).
 
 **Demonstrates:** Attention-based REINFORCE with a greedy rollout baseline; distribution-shift robustness analysis; surprising OOD generalization of learned routing policies.
 
@@ -23,10 +23,10 @@ Model trained on **uniform** random cities, evaluated without retraining on all 
 | Distribution | Gap vs 2-opt | Model tour | Model wins? |
 |---|---|---|---|
 | uniform (in-dist) | −1.1% ± 3.3% | 3.891 | ✓ |
-| grid              | −0.6% ± 3.3% | 4.589 | ✓ |
-| circle            | −0.0% ± 0.0% | 2.569 | ✓ |
-| clustered         | +2.0% ± 4.3% | 2.156 | — |
-| compact           | +4.4% ± 6.1% | 1.642 | — |
+| grid              | −2.7% ± 3.5% | 4.704 | ✓ |
+| circle            | −0.0% ± 0.0% | 2.565 | ✓ |
+| clustered         | +2.1% ± 5.5% | 2.158 | — |
+| compact           | +5.1% ± 6.6% | 1.646 | — |
 
 Gap = (model − 2-opt) / 2-opt × 100%. Negative = model shorter. Evaluation: 1000 instances per distribution, fixed seed 1234.
 
@@ -42,8 +42,8 @@ Gap = (model − 2-opt) / 2-opt × 100%. Negative = model shorter. Evaluation: 1
 
 | Epoch | Avg tour length |
 |---|---|
-| 1   | 5.014 |
-| 10  | 4.037 |
+| 1   | 5.015 |
+| 10  | 4.039 |
 | 50  | 3.941 |
 | 100 | 3.912 |
 
