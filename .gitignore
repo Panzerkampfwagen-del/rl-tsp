@@ -4,4 +4,3 @@ __pycache__/
 *.pyc
 *.egg-info/
 .pytest_cache/
-rl_tsp_claudecode_prompt.md
