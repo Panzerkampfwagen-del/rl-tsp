@@ -118,14 +118,17 @@ class TSPModel(nn.Module):
 
         for step in range(N):
             logits = self.decoder(node_emb, graph_emb, first_emb, last_emb, visited)
-            probs = F.softmax(logits, dim=-1)
+            # log_softmax once; probs derived via exp() rather than a second
+            # softmax reduction over the same logits.
+            log_p_all = F.log_softmax(logits, dim=-1)
+            probs = log_p_all.exp()
 
             if greedy:
                 chosen = probs.argmax(dim=-1)
             else:
                 chosen = torch.multinomial(probs, 1).squeeze(1)
 
-            log_p = F.log_softmax(logits, dim=-1)[batch_idx, chosen]
+            log_p = log_p_all[batch_idx, chosen]
             log_probs += log_p
 
             tour[:, step] = chosen
