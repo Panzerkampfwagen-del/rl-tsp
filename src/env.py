@@ -65,9 +65,10 @@ def sample_grid(batch: int, n: int, device: str = "cpu",
     g = np.linspace(0.05, 0.95, side)
     gx, gy = np.meshgrid(g, g)
     all_pts = np.stack([gx.ravel(), gy.ravel()], axis=1)  # (side*side, 2)
-    chosen_idx = rs.choice(len(all_pts), size=n, replace=False)
-    grid_pts = all_pts[chosen_idx]  # (n, 2) — symmetric random sample from full grid
-    pts = np.tile(grid_pts, (batch, 1, 1)).astype(np.float32)
+    pts = np.empty((batch, n, 2), dtype=np.float32)
+    for b in range(batch):
+        chosen_idx = rs.choice(len(all_pts), size=n, replace=False)
+        pts[b] = all_pts[chosen_idx]  # (n, 2) — independent random sample per instance
     if jitter > 0:
         noise = rs.uniform(-jitter, jitter, size=(batch, n, 2)).astype(np.float32)
         pts = np.clip(pts + noise, 0.0, 1.0)
@@ -79,10 +80,14 @@ def sample_circle(batch: int, n: int, device: str = "cpu",
                   rng: Optional[np.random.Generator] = None) -> torch.Tensor:
     """Cities on a noisy ring."""
     rs = rng if rng is not None else np.random.default_rng()
-    angles = np.linspace(0, 2 * np.pi, n, endpoint=False)
-    base = np.stack([0.5 + 0.4 * np.cos(angles),
-                     0.5 + 0.4 * np.sin(angles)], axis=1)  # (n,2)
-    pts = np.tile(base, (batch, 1, 1)).astype(np.float32)
+    base_angles = np.linspace(0, 2 * np.pi, n, endpoint=False)
+    pts = np.empty((batch, n, 2), dtype=np.float32)
+    for b in range(batch):
+        phase = rs.uniform(0, 2 * np.pi)          # independent rotation per instance
+        radius = 0.4 + rs.normal(0, noise)        # independent radius per instance
+        angles = base_angles + phase
+        pts[b] = np.stack([0.5 + radius * np.cos(angles),
+                           0.5 + radius * np.sin(angles)], axis=1)
     if noise > 0:
         pts += rs.normal(0, noise, size=(batch, n, 2)).astype(np.float32)
     pts = np.clip(pts, 0.0, 1.0)

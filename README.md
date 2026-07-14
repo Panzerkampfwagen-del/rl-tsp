@@ -23,10 +23,10 @@ Model trained on **uniform** random cities, evaluated without retraining on all 
 | Distribution | Gap vs 2-opt | Model tour | Model wins? |
 |---|---|---|---|
 | uniform (in-dist) | −1.1% ± 3.3% | 3.891 | ✓ |
-| grid              | −2.7% ± 3.5% | 4.704 | ✓ |
-| circle            | −0.0% ± 0.0% | 2.565 | ✓ |
+| grid              | −1.9% ± 3.6% | 4.911 | ✓ |
+| circle            | +0.0% ± 0.0% | 2.565 | ✓ |
 | clustered         | +2.1% ± 5.5% | 2.158 | — |
-| compact           | +5.1% ± 6.6% | 1.646 | — |
+| compact           | +5.1% ± 6.5% | 1.647 | — |
 
 Gap = (model − 2-opt) / 2-opt × 100%. Negative = model shorter. Evaluation: 1000 instances per distribution, fixed seed 1234.
 
