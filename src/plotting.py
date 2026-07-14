@@ -6,7 +6,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 
 def plot_tour(cities_np: np.ndarray, tour_np: np.ndarray,

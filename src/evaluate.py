@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import torch
 import numpy as np
 from typing import Dict, Tuple
-from src.env import tour_length, sample_instances
+from src.env import tour_length
 from src.heuristics import batch_nn_tours, batch_best_tours, random_tours
 from src.model import TSPModel
 

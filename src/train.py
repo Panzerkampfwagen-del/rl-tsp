@@ -6,7 +6,6 @@ import csv
 import argparse
 import time
 import torch
-import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from config import Config, small_config
